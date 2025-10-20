@@ -3,17 +3,13 @@ import org.junit.Before;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
-import page.FAQPage;
+import page.MainPage;
 
 import java.time.Duration;
 
-public class BaseTest1 {
-    WebDriver driver = new ChromeDriver();
-    //    WebDriver driver = new FirefoxDriver();
-    FAQPage faqPage;
-
+public class BaseTest {
+    WebDriver driver;
+    MainPage mainPage;
 
     @Before
     public void startUp() {
@@ -21,13 +17,7 @@ public class BaseTest1 {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox", "--disable-dev-shm-usage");
         driver = new ChromeDriver(options);
-
-        // Создаём драйвер для браузера Firefox
-//        FirefoxOptions options = new FirefoxOptions();
-//        options.addArguments("--no-sandbox", "--disable-dev-shm-usage");
-//        driver = new FirefoxDriver(options);
-
-        faqPage = new FAQPage(driver);
+        mainPage = new MainPage(driver);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(30));
     }
 

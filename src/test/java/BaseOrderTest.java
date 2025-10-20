@@ -3,21 +3,15 @@ import org.junit.Before;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
-import page.OrderDownMainPage;
-import page.OrderMainPage;
+import page.MainPage;
 import page.OrderPage;
 
 import java.time.Duration;
 
 public class BaseOrderTest {
-    WebDriver driver = new ChromeDriver();
-//    WebDriver driver = new FirefoxDriver();
-
-    OrderMainPage orderMainPage;
+    WebDriver driver;
+    MainPage mainPage;
     OrderPage orderPage;
-    OrderDownMainPage orderDownMainPage;
 
     @Before
     public void startUp() {
@@ -26,14 +20,9 @@ public class BaseOrderTest {
         options.addArguments("--no-sandbox", "--disable-dev-shm-usage");
         driver = new ChromeDriver(options);
 
-        // Создаём драйвер для браузера Firefox
-//        FirefoxOptions options = new FirefoxOptions();
-//        options.addArguments("--no-sandbox", "--disable-dev-shm-usage");
-//        driver = new FirefoxDriver(options);
-
-        orderMainPage = new OrderMainPage(driver);
+        // Теперь используем только два класса страниц
+        mainPage = new MainPage(driver);
         orderPage = new OrderPage(driver);
-        orderDownMainPage = new OrderDownMainPage(driver);
 
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(30));
     }
