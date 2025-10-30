@@ -1,6 +1,5 @@
 package page;
 
-import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -28,15 +27,8 @@ public class MainPage {
     private By questionCancelOrder = By.id("accordion__heading-6");
     private By questionPaymentArea = By.id("accordion__heading-7");
 
-    // Локаторы для FAQ - ответы
-    private By answerCost = By.xpath("//div[@data-accordion-component='AccordionItemPanel']/p[text()='Сутки — 400 рублей. Оплата курьеру — наличными или картой.']");
-    private By answerMultipleScooters = By.xpath("//div[@data-accordion-component='AccordionItemPanel']/p[text()='Пока что у нас так: один заказ — один самокат. Если хотите покататься с друзьями, можете просто сделать несколько заказов — один за другим.']");
-    private By answerRentalTime = By.xpath("//div[@data-accordion-component='AccordionItemPanel']/p[text()='Допустим, вы оформляете заказ на 8 мая. Мы привозим самокат 8 мая в течение дня. Отсчёт времени аренды начинается с момента, когда вы оплатите заказ курьеру. Если мы привезли самокат 8 мая в 20:30, суточная аренда закончится 9 мая в 20:30.']");
-    private By answerOrderToday = By.xpath("//div[@data-accordion-component='AccordionItemPanel']/p[text()='Только начиная с завтрашнего дня. Но скоро станем расторопнее.']");
-    private By answerExtendReturn = By.xpath("//div[@data-accordion-component='AccordionItemPanel']/p[text()='Пока что нет! Но если что-то срочное — всегда можно позвонить в поддержку по красивому номеру 1010.']");
-    private By answerCharging = By.xpath("//div[@data-accordion-component='AccordionItemPanel']/p[text()='Самокат приезжает к вам с полной зарядкой. Этого хватает на восемь суток — даже если будете кататься без передышек и во сне. Зарядка не понадобится.']");
-    private By answerCancelOrder = By.xpath("//div[@data-accordion-component='AccordionItemPanel']/p[text()='Да, пока самокат не привезли. Штрафа не будет, объяснительной записки тоже не попросим. Все же свои.']");
-    private By answerPaymentArea = By.xpath("//div[@data-accordion-component='AccordionItemPanel']/p[text()='Да, обязательно. Всем самокатов! И Москве, и Московской области.']");
+    // Универсальный локатор для активного ответа
+    private By activeAnswer = By.cssSelector("[data-accordion-component='AccordionItemPanel']:not([hidden])");
 
     private By closeButtonCookie = By.cssSelector("button.App_CookieButton__3cvqF");
     private By faqTable = By.xpath(".//div[@class='accordion']");
@@ -65,83 +57,23 @@ public class MainPage {
         driver.findElement(questionLocator).click();
     }
 
-    // Индивидуальные методы для каждого вопроса (альтернативный подход)
-    public void clickCostQuestion() {
-        driver.findElement(questionCost).click();
-    }
-
-    public void clickMultipleScootersQuestion() {
-        driver.findElement(questionMultipleScooters).click();
-    }
-
-    public void clickRentalTimeQuestion() {
-        driver.findElement(questionRentalTime).click();
-    }
-
-    public void clickOrderTodayQuestion() {
-        driver.findElement(questionOrderToday).click();
-    }
-
-    public void clickExtendReturnQuestion() {
-        driver.findElement(questionExtendReturn).click();
-    }
-
-    public void clickChargingQuestion() {
-        driver.findElement(questionCharging).click();
-    }
-
-    public void clickCancelOrderQuestion() {
-        driver.findElement(questionCancelOrder).click();
-    }
-
-    public void clickPaymentAreaQuestion() {
-        driver.findElement(questionPaymentArea).click();
-    }
-
-    public void verifyAnswerDisplayed(int answerNumber) {
-        By answerLocator = getAnswerLocator(answerNumber);
+    // Получение текста активного ответа
+    public String getActiveAnswerText() {
         new WebDriverWait(driver, Duration.ofSeconds(15))
-                .until(ExpectedConditions.visibilityOfElementLocated(answerLocator));
-        Assert.assertTrue(driver.findElement(answerLocator).isDisplayed());
+                .until(ExpectedConditions.visibilityOfElementLocated(activeAnswer));
+        WebElement answerElement = driver.findElement(activeAnswer);
+        return answerElement.getText().trim();
     }
 
-    // Индивидуальные методы для проверки каждого ответа
-    public void verifyCostAnswerDisplayed() {
-        waitAndVerifyAnswerDisplayed(answerCost);
-    }
-
-    public void verifyMultipleScootersAnswerDisplayed() {
-        waitAndVerifyAnswerDisplayed(answerMultipleScooters);
-    }
-
-    public void verifyRentalTimeAnswerDisplayed() {
-        waitAndVerifyAnswerDisplayed(answerRentalTime);
-    }
-
-    public void verifyOrderTodayAnswerDisplayed() {
-        waitAndVerifyAnswerDisplayed(answerOrderToday);
-    }
-
-    public void verifyExtendReturnAnswerDisplayed() {
-        waitAndVerifyAnswerDisplayed(answerExtendReturn);
-    }
-
-    public void verifyChargingAnswerDisplayed() {
-        waitAndVerifyAnswerDisplayed(answerCharging);
-    }
-
-    public void verifyCancelOrderAnswerDisplayed() {
-        waitAndVerifyAnswerDisplayed(answerCancelOrder);
-    }
-
-    public void verifyPaymentAreaAnswerDisplayed() {
-        waitAndVerifyAnswerDisplayed(answerPaymentArea);
-    }
-
-    private void waitAndVerifyAnswerDisplayed(By answerLocator) {
-        new WebDriverWait(driver, Duration.ofSeconds(15))
-                .until(ExpectedConditions.visibilityOfElementLocated(answerLocator));
-        Assert.assertTrue(driver.findElement(answerLocator).isDisplayed());
+    // Проверка что ответ отображается
+    public boolean isAnswerDisplayed() {
+        try {
+            new WebDriverWait(driver, Duration.ofSeconds(5))
+                    .until(ExpectedConditions.visibilityOfElementLocated(activeAnswer));
+            return driver.findElement(activeAnswer).isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public void scrollToFAQTable() {
@@ -153,7 +85,7 @@ public class MainPage {
         driver.findElement(closeButtonCookie).click();
     }
 
-    // Вспомогательные методы для получения локаторов по номеру (оставлены для обратной совместимости)
+    // Вспомогательные методы для получения локаторов по номеру
     private By getQuestionLocator(int number) {
         switch (number) {
             case 1: return questionCost;
@@ -165,20 +97,6 @@ public class MainPage {
             case 7: return questionCancelOrder;
             case 8: return questionPaymentArea;
             default: throw new IllegalArgumentException("Invalid question number: " + number);
-        }
-    }
-
-    private By getAnswerLocator(int number) {
-        switch (number) {
-            case 1: return answerCost;
-            case 2: return answerMultipleScooters;
-            case 3: return answerRentalTime;
-            case 4: return answerOrderToday;
-            case 5: return answerExtendReturn;
-            case 6: return answerCharging;
-            case 7: return answerCancelOrder;
-            case 8: return answerPaymentArea;
-            default: throw new IllegalArgumentException("Invalid answer number: " + number);
         }
     }
 

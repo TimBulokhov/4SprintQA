@@ -1,9 +1,10 @@
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import page.OrderPage;
 
 @RunWith(Parameterized.class)
-public class OrderTest extends BaseOrderTest {
+public class OrderTest extends BaseTest {
     private final String name;
     private final String surname;
     private final String address;
@@ -40,6 +41,7 @@ public class OrderTest extends BaseOrderTest {
 
     @Test
     public void orderPositiveTest() {
+        orderPage = new OrderPage(driver);
         mainPage.openPage();
 
         if (useTopButton) {
@@ -51,6 +53,8 @@ public class OrderTest extends BaseOrderTest {
 
         orderPage.fillOrderForm(name, surname, address, subway, phoneNumber, date, rentalPeriod, color, comment);
 
+        // Нажимаем кнопку "Заказать" (появляется окно "Хотите оформить заказ?")
+        orderPage.clickOrderCreateButton();
         orderPage.clickOrderConfirmButton();
         orderPage.getOrderCreation();
     }

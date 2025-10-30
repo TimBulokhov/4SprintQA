@@ -3,6 +3,7 @@ package page;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -106,9 +107,24 @@ public class OrderPage {
     }
 
     public void getOrderCreation() {
+
+        // Ждем появления модального окна с успешным оформлением заказа
+        By successModal = By.cssSelector("div.Order_Modal__YZ-d3");
         new WebDriverWait(driver, Duration.ofSeconds(30))
-                .until(ExpectedConditions.visibilityOfElementLocated(orderCreation));
-        Assert.assertTrue(driver.findElement(orderCreation).isDisplayed());
+                .until(ExpectedConditions.visibilityOfElementLocated(successModal));
+
+        // Проверяем что отображается текст "Заказ оформлен"
+        By successTitle = By.xpath("//div[contains(@class, 'Order_ModalHeader')]");
+        WebElement successElement = driver.findElement(successTitle);
+
+        String successText = successElement.getText();
+        Assert.assertTrue("Должен отображаться текст 'Заказ оформлен', а получили: " + successText,
+                successText.contains("Заказ оформлен"));
+
+        // Дополнительная проверка - кнопка "Посмотреть статус"
+        By statusButton = By.xpath("//button[contains(text(), 'Посмотреть статус')]");
+        WebElement statusElement = driver.findElement(statusButton);
+        Assert.assertTrue("Должна отображаться кнопка 'Посмотреть статус'", statusElement.isDisplayed());
     }
 
     // Обьединенный метод

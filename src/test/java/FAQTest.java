@@ -1,28 +1,32 @@
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import page.MainPage;
 
 @RunWith(Parameterized.class)
 public class FAQTest extends BaseTest {
 
     private final int questionNumber;
+    private final String questionDescription;
+    private final String expectedAnswer;
 
-    public FAQTest(int questionNumber, String questionDescription) {
+    public FAQTest(int questionNumber, String questionDescription, String expectedAnswer) {
         this.questionNumber = questionNumber;
+        this.questionDescription = questionDescription;
+        this.expectedAnswer = expectedAnswer;
     }
 
     @Parameterized.Parameters(name = "Тест вопроса FAQ: {1}")
     public static Object[][] getQuestionData() {
         return new Object[][] {
-                {1, "Стоимость аренды"},
-                {2, "Несколько самокатов"},
-                {3, "Время аренды"},
-                {4, "Заказ на сегодня"},
-                {5, "Продление и возврат"},
-                {6, "Зарядка самоката"},
-                {7, "Отмена заказа"},
-                {8, "Зона оплаты"}
+                {1, "Стоимость аренды", "Сутки — 400 рублей. Оплата курьеру — наличными или картой."},
+                {2, "Несколько самокатов", "Пока что у нас так: один заказ — один самокат. Если хотите покататься с друзьями, можете просто сделать несколько заказов — один за другим."},
+                {3, "Время аренды", "Допустим, вы оформляете заказ на 8 мая. Мы привозим самокат 8 мая в течение дня. Отсчёт времени аренды начинается с момента, когда вы оплатите заказ курьеру. Если мы привезли самокат 8 мая в 20:30, суточная аренда закончится 9 мая в 20:30."},
+                {4, "Заказ на сегодня", "Только начиная с завтрашнего дня. Но скоро станем расторопнее."},
+                {5, "Продление и возврат", "Пока что нет! Но если что-то срочное — всегда можно позвонить в поддержку по красивому номеру 1010."},
+                {6, "Зарядка самоката", "Самокат приезжает к вам с полной зарядкой. Этого хватает на восемь суток — даже если будете кататься без передышек и во сне. Зарядка не понадобится."},
+                {7, "Отмена заказа", "Да, пока самокат не привезли. Штрафа не будет, объяснительной записки тоже не попросим. Все же свои."},
+                {8, "Зона оплаты", "Да, обязательно. Всем самокатов! И Москве, и Московской области."}
         };
     }
 
@@ -37,8 +41,11 @@ public class FAQTest extends BaseTest {
         // Закрыть куки, если мешают
         mainPage.closeCookieButton();
 
-        // Нажать на вопрос и проверить ответ
+        // Нажать на вопрос
         mainPage.clickQuestion(questionNumber);
-        mainPage.verifyAnswerDisplayed(questionNumber);
+
+        // Проверить что ответ отображается и содержит правильный текст
+        String actualAnswer = mainPage.getActiveAnswerText();
+        Assert.assertEquals("Текст ответа должен соответствовать ожидаемому", expectedAnswer, actualAnswer);
     }
 }
