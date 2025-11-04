@@ -28,9 +28,18 @@ public class OrderPage {
     private By commentField = By.cssSelector("input[placeholder='Комментарий для курьера']");
     private By createButton = By.xpath("//div[contains(@class,'Order_Buttons')]/button[text()='Заказать']");
 
+    // Локаторы для выпадающих списков
+    private By subwayOption = By.xpath(".//div[@class='select-search__select']//*[text()='%s']");
+    private By rentalPeriodOption = By.xpath(".//div[text()='%s']");
+
+    // Локаторы для цветов самоката
+    private By colorCheckbox = By.xpath(".//label[text()='%s']/input");
+
     // Локаторы для подтверждения заказа
     private By confirmButton = By.xpath(".//button[text()='Да']");
-    private By orderCreation = By.xpath("//div[@class='Order_Modal__YZ-d3']");
+    private By successModal = By.cssSelector("div.Order_Modal__YZ-d3");
+    private By successTitle = By.xpath("//div[contains(@class, 'Order_ModalHeader')]");
+    private By statusButton = By.xpath("//button[contains(text(), 'Посмотреть статус')]");
 
     public OrderPage(WebDriver driver) {
         this.driver = driver;
@@ -54,7 +63,7 @@ public class OrderPage {
     }
 
     public void clickSelectedSubway(String subway) {
-        By subwayField = By.xpath(".//div[text()='" + subway + "']");
+        By subwayField = By.xpath(String.format(".//div[text()='%s']", subway));
         driver.findElement(subwayField).click();
     }
 
@@ -84,12 +93,12 @@ public class OrderPage {
     }
 
     public void clickSelectedRentalPeriod(String rentalPeriod) {
-        By rentalPeriodField = By.xpath(".//div[text()='" + rentalPeriod + "']");
+        By rentalPeriodField = By.xpath(String.format(".//div[text()='%s']", rentalPeriod));
         driver.findElement(rentalPeriodField).click();
     }
 
     public void setColor(String color) {
-        By colorField = By.xpath(".//label[text()='" + color + "']");
+        By colorField = By.xpath(String.format(".//label[text()='%s']", color));
         driver.findElement(colorField).click();
     }
 
@@ -107,27 +116,22 @@ public class OrderPage {
     }
 
     public void getOrderCreation() {
-
         // Ждем появления модального окна с успешным оформлением заказа
-        By successModal = By.cssSelector("div.Order_Modal__YZ-d3");
         new WebDriverWait(driver, Duration.ofSeconds(30))
                 .until(ExpectedConditions.visibilityOfElementLocated(successModal));
 
         // Проверяем что отображается текст "Заказ оформлен"
-        By successTitle = By.xpath("//div[contains(@class, 'Order_ModalHeader')]");
         WebElement successElement = driver.findElement(successTitle);
-
         String successText = successElement.getText();
         Assert.assertTrue("Должен отображаться текст 'Заказ оформлен', а получили: " + successText,
                 successText.contains("Заказ оформлен"));
 
         // Дополнительная проверка - кнопка "Посмотреть статус"
-        By statusButton = By.xpath("//button[contains(text(), 'Посмотреть статус')]");
         WebElement statusElement = driver.findElement(statusButton);
         Assert.assertTrue("Должна отображаться кнопка 'Посмотреть статус'", statusElement.isDisplayed());
     }
 
-    // Обьединенный метод
+    // Объединенный метод
     public void fillOrderForm(String name, String surname, String address, String subway,
                               String phoneNumber, String date, String rentalPeriod,
                               String color, String comment) {
